@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enter to Win! | Участвуй и выиграй!</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F5A623;
+    --gold-light: #FFD78A;
+    --dark: #0A0A0F;
+    --darker: #06060A;
+    --accent: #FF6B35;
+    --green: #2ECC71;
+    --card-bg: rgba(255,255,255,0.04);
+    --card-border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--dark);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .bg-pattern {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -20%, rgba(245,166,35,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255,107,53,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 40% at 10% 90%, rgba(245,166,35,0.06) 0%, transparent 50%);
+  }
+
+  .sparkles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+  .sparkle {
+    position: absolute; width: 3px; height: 3px;
+    background: var(--gold); border-radius: 50%;
+    animation: sparkleFloat linear infinite; opacity: 0;
+  }
+
+  @keyframes sparkleFloat {
+    0% { opacity: 0; transform: translateY(100vh) scale(0); }
+    10% { opacity: 1; } 90% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+  }
+
+  .container {
+    position: relative; z-index: 1; max-width: 520px;
+    margin: 0 auto; padding: 40px 24px 60px;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+
+  .trophy {
+    font-size: 64px; margin-bottom: 8px;
+    animation: trophyBounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(245,166,35,0.4));
+  }
+
+  @keyframes trophyBounce {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+  }
+
+  .header { text-align: center; margin-bottom: 36px; }
+
+  .header h1 {
+    font-weight: 900; line-height: 1.1; letter-spacing: -1.5px;
+    background: linear-gradient(135deg, #fff 30%, var(--gold-light) 70%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .header h1 .en-title { font-size: 2.5rem; display: block; }
+  .header h1 .ru-title { font-size: 1.5rem; display: block; font-weight: 700; opacity: 0.6; font-style: italic; }
+
+  .header p { font-weight: 300; font-size: 1rem; line-height: 1.6; }
+  .header p strong { color: var(--gold); font-weight: 600; -webkit-text-fill-color: var(--gold); }
+  .header .desc-en { color: rgba(255,255,255,0.85); margin-bottom: 6px; display: block; }
+  .header .desc-ru { color: rgba(255,255,255,0.5); font-style: italic; font-size: 0.92rem; display: block; }
+
+  .form-card {
+    width: 100%; background: var(--card-bg);
+    border: 1px solid var(--card-border); border-radius: 20px;
+    padding: 32px 28px; backdrop-filter: blur(20px);
+    animation: cardIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0; transform: translateY(30px);
+  }
+
+  @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+
+  .form-group { margin-bottom: 20px; }
+
+  .form-group label {
+    display: flex; align-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--gold); margin-bottom: 8px;
+  }
+  .form-group label .label-ru { font-style: italic; opacity: 0.6; text-transform: none; letter-spacing: 0.5px; font-size: 0.72rem; }
+  .form-group label .label-sep { opacity: 0.3; margin: 0 6px; }
+
+  .form-group input {
+    width: 100%; padding: 14px 18px;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 12px; color: #fff;
+    font-family: 'Outfit', sans-serif; font-size: 1rem;
+    transition: all 0.3s ease; outline: none;
+  }
+  .form-group input::placeholder { color: rgba(255,255,255,0.25); }
+  .form-group input:focus {
+    border-color: var(--gold); background: rgba(245,166,35,0.06);
+    box-shadow: 0 0 0 4px rgba(245,166,35,0.1);
+  }
+
+  .submit-btn {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    border: none; border-radius: 14px; color: #000;
+    font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 800;
+    cursor: pointer; transition: all 0.3s ease;
+    text-transform: uppercase; margin-top: 8px; line-height: 1.5;
+  }
+  .submit-btn .btn-ru { font-weight: 600; font-size: 0.78rem; opacity: 0.65; text-transform: none; font-style: italic; display: block; }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,166,35,0.35); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .error-msg { color: #FF6B6B; font-size: 0.85rem; margin-top: 6px; display: none; line-height: 1.4; }
+  .error-msg.show { display: block; animation: shake 0.4s ease; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .server-msg {
+    border-radius: 12px; padding: 14px 18px;
+    font-size: 0.9rem; margin-top: 16px;
+    display: none; text-align: center; line-height: 1.5;
+  }
+  .server-msg.error { background: rgba(255,60,60,0.1); border: 1px solid rgba(255,60,60,0.25); color: #FF8A8A; }
+  .server-msg.info { background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.25); color: var(--gold-light); }
+  .server-msg.show { display: block; animation: shake 0.4s ease; }
+
+  /* Loading spinner on button */
+  .submit-btn.loading .btn-text { opacity: 0.4; }
+  .submit-btn .spinner { display: none; }
+  .submit-btn.loading .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2.5px solid rgba(0,0,0,0.2); border-top-color: #000;
+    border-radius: 50%; animation: spin 0.6s linear infinite;
+    vertical-align: middle; margin-left: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Success screen */
+  .success-screen { display: none; text-align: center; width: 100%; animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .success-screen.show { display: block; }
+
+  .checkmark-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), #27AE60);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow: 0 0 40px rgba(46,204,113,0.3);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+  .checkmark-circle svg { width: 40px; height: 40px; stroke: #fff; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+  .success-screen h2 { font-weight: 800; font-size: 1.8rem; margin-bottom: 2px; }
+  .success-screen .success-h2-ru { font-size: 1.15rem; font-weight: 600; color: rgba(255,255,255,0.4); font-style: italic; margin-bottom: 8px; }
+  .success-screen .sub-text { font-size: 0.95rem; margin-bottom: 32px; line-height: 1.6; }
+  .success-screen .sub-text .en { color: rgba(255,255,255,0.6); }
+  .success-screen .sub-text .ru { color: rgba(255,255,255,0.35); font-style: italic; font-size: 0.9rem; }
+
+  .lottery-number-box {
+    background: linear-gradient(135deg, rgba(245,166,35,0.15), rgba(255,107,53,0.1));
+    border: 2px solid var(--gold); border-radius: 16px;
+    padding: 28px 20px; margin-bottom: 16px;
+  }
+  .lottery-label { font-family: 'Space Mono', monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 3px; color: var(--gold); margin-bottom: 2px; }
+  .lottery-label-ru { font-size: 0.75rem; color: rgba(245,166,35,0.45); font-style: italic; margin-bottom: 14px; }
+
+  .lottery-number {
+    font-family: 'Space Mono', monospace; font-size: 3.2rem; font-weight: 700;
+    color: #fff; letter-spacing: 8px;
+    text-shadow: 0 0 30px rgba(245,166,35,0.4);
+    animation: numberGlow 2s ease-in-out infinite alternate;
+  }
+  @keyframes numberGlow {
+    from { text-shadow: 0 0 20px rgba(245,166,35,0.3); }
+    to { text-shadow: 0 0 40px rgba(245,166,35,0.6); }
+  }
+
+  .save-note { font-size: 0.85rem; margin-top: 16px; line-height: 1.7; }
+  .save-note .en { color: rgba(255,255,255,0.5); }
+  .save-note .en strong { color: var(--gold-light); }
+  .save-note .ru { color: rgba(255,255,255,0.3); font-style: italic; font-size: 0.82rem; }
+</style>
+</head>
+<body>
+
+<div class="bg-pattern"></div>
+<div class="sparkles" id="sparkles"></div>
+
+<div class="container">
+  <!-- ENTRY FORM -->
+  <div id="formView">
+    <div class="header">
+      <div class="trophy">🏆</div>
+      <h1>
+        <span class="en-title">Enter to Win!</span>
+        <span class="ru-title">Участвуй и выиграй!</span>
+      </h1>
+      <p>
+        <span class="desc-en">Enter your name and email for a chance to <strong>win a reward</strong>. You'll receive a lottery number drawn at the end!</span>
+        <span class="desc-ru">Введите своё имя и email, чтобы получить шанс <strong>выиграть приз</strong>. Вы получите лотерейный номер для розыгрыша!</span>
+      </p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-group">
+        <label>
+          <span>Your Name</span>
+          <span class="label-sep">/</span>
+          <span class="label-ru">Ваше имя</span>
+        </label>
+        <input type="text" id="nameInput" placeholder="e.g. Jane Smith / Иванова Мария" autocomplete="name">
+        <div class="error-msg" id="nameError">Please enter your name / Пожалуйста, введите имя</div>
+      </div>
+      <div class="form-group">
+        <label>
+          <span>Email Address</span>
+          <span class="label-sep">/</span>
+          <span class="label-ru">Электронная почта</span>
+        </label>
+        <input type="email" id="emailInput" placeholder="e.g. jane@email.com" autocomplete="email">
+        <div class="error-msg" id="emailError">Please enter a valid email / Введите корректный email</div>
+      </div>
+      <button class="submit-btn" id="submitBtn" onclick="submitEntry()">
+        <span class="btn-text">Claim My Number 🎰</span><span class="spinner"></span>
+        <span class="btn-ru btn-text">Получить мой номер</span>
+      </button>
+      <div class="server-msg" id="serverMsg"></div>
+    </div>
+  </div>
+
+  <!-- SUCCESS SCREEN -->
+  <div class="success-screen" id="successView">
+    <div class="checkmark-circle">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>You're In!</h2>
+    <div class="success-h2-ru">Вы участвуете!</div>
+    <div class="sub-text">
+      <span class="en">Here's your lottery number — hold onto it!</span><br>
+      <span class="ru">Вот ваш лотерейный номер — сохраните его!</span>
+    </div>
+    <div class="lottery-number-box">
+      <div class="lottery-label">Your Lottery Number</div>
+      <div class="lottery-label-ru">Ваш лотерейный номер</div>
+      <div class="lottery-number" id="lotteryNumber">---</div>
+    </div>
+    <div class="save-note">
+      <span class="en">📸 <strong>Screenshot this number!</strong> The winner will be announced at the end of the event.</span><br>
+      <span class="ru">📸 Сделайте скриншот! Победитель будет объявлен в конце мероприятия.</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // =============================================
+  //  PASTE YOUR GOOGLE APPS SCRIPT URL BELOW
+  //  (Replace the placeholder with your URL)
+  // =============================================
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRlKBU5TkspFB-v0mXyt1REl0G1S9jS7TVE3OM1goScQusng7sBLK9OS2u_thfv91xaA/exec';
+  // =============================================
+
+  // Sparkles
+  (function() {
+    var c = document.getElementById('sparkles');
+    for (var i = 0; i < 25; i++) {
+      var s = document.createElement('div');
+      s.className = 'sparkle';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.animationDuration = (4 + Math.random() * 6) + 's';
+      s.style.animationDelay = (Math.random() * 8) + 's';
+      s.style.width = s.style.height = (2 + Math.random() * 3) + 'px';
+      c.appendChild(s);
+    }
+  })();
+
+  function showMsg(text, type) {
+    var el = document.getElementById('serverMsg');
+    el.textContent = text;
+    el.className = 'server-msg ' + type + ' show';
+  }
+
+  function hideMsg() {
+    document.getElementById('serverMsg').classList.remove('show');
+  }
+
+  function setLoading(on) {
+    var btn = document.getElementById('submitBtn');
+    if (on) {
+      btn.classList.add('loading');
+      btn.disabled = true;
+    } else {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  }
+
+  function showSuccess(number) {
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successView').classList.add('show');
+    document.getElementById('lotteryNumber').textContent = number;
+  }
+
+  function submitEntry() {
+    var name = document.getElementById('nameInput').value.trim();
+    var email = document.getElementById('emailInput').value.trim();
+    var valid = true;
+
+    hideMsg();
+
+    if (!name) {
+      document.getElementById('nameError').classList.add('show');
+      valid = false;
+    } else {
+      document.getElementById('nameError').classList.remove('show');
+    }
+
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      document.getElementById('emailError').classList.add('show');
+      valid = false;
+    } else {
+      document.getElementById('emailError').classList.remove('show');
+    }
+
+    if (!valid) return;
+
+    // Check config
+    if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+      showMsg('⚠️ Apps Script URL not set yet. See setup instructions in google-apps-script.js', 'error');
+      return;
+    }
+
+    setLoading(true);
+
+    // Build the request URL (GET avoids all CORS issues with Apps Script)
+    var url = SCRIPT_URL
+      + '?action=submit'
+      + '&name=' + encodeURIComponent(name)
+      + '&email=' + encodeURIComponent(email);
+
+    fetch(url)
+      .then(function(response) {
+        // Apps Script redirects — fetch follows automatically
+        return response.json();
+      })
+      .then(function(data) {
+        setLoading(false);
+
+        if (data.status === 'success') {
+          showSuccess(data.number);
+        } else if (data.status === 'duplicate') {
+          showMsg('You already entered! Your number is ' + data.number + ' / Вы уже участвуете! Ваш номер: ' + data.number, 'info');
+        } else {
+          showMsg('Error: ' + (data.message || 'Unknown error') + ' / Ошибка. Попробуйте ещё раз.', 'error');
+        }
+      })
+      .catch(function(err) {
+        setLoading(false);
+        showMsg('Connection error. Please try again. / Ошибка соединения. Попробуйте ещё раз.', 'error');
+        console.error('Submit error:', err);
+      });
+  }
+
+  // Keyboard shortcuts
+  document.getElementById('emailInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitEntry();
+  });
+  document.getElementById('nameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('emailInput').focus();
+  });
+</script>
+
+</body>
+</html>
